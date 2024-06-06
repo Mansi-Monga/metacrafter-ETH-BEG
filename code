@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.26;
+
+contract CustomToken {
+    // Public variables to store the token details
+    string public tokenName; // Name of the token
+    string public tokenSymbol; // Abbreviation of the token
+    uint256 public totalTokens; // Total token supply
+
+    // Mapping to keep track of each address's balance
+    mapping(address => uint256) public accountBalances;
+
+    // Constructor to initialize the token details
+    constructor(string memory _tokenName, string memory _tokenSymbol) {
+        tokenName = _tokenName;
+        tokenSymbol = _tokenSymbol;
+        totalTokens = 0;
+    }
+
+    // Function to mint new tokens
+    function mint(address recipient, uint256 amount) public {
+        require(amount > 0, "Mint amount must be greater than zero"); 
+        totalTokens += amount; 
+        accountBalances[recipient] += amount;
+        emit TokenTransfer(address(0), recipient, amount);
+    }
+
+    // Function to burn tokens
+    function burn(address holder, uint256 amount) public {
+        require(amount > 0, "Burn amount must be greater than zero");
+        require(accountBalances[holder] >= amount, "Insufficient balance to burn");
+        totalTokens -= amount; 
+        accountBalances[holder] -= amount;
+        emit TokenTransfer(holder, address(0), amount); 
+    }
+
+    // Event to log token transfers
+    event TokenTransfer(address indexed from, address indexed to, uint256 value);
+}
